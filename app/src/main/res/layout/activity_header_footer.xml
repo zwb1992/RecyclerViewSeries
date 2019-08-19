@@ -52,10 +52,10 @@
 
         <com.zwb.recyclerviewlibrary.RVHeaderFooter
                 android:id="@+id/footer"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="200dp"
                 android:background="#22222222"
-                android:layout_height="wrap_content">
+                android:layout_height="100dp">
 
             <LinearLayout
                     android:layout_width="match_parent"

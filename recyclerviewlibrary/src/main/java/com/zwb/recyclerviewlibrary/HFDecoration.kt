@@ -19,7 +19,7 @@ class HFDecoration(private var isHeader: Boolean = true) : RecyclerView.ItemDeco
     /**
      * 设置分割线大小
      */
-    fun setSize(mHeight: Int,mWidth: Int) {
+    fun setSize(mHeight: Int, mWidth: Int) {
         this.mHeight = mHeight
         this.mWidth = mWidth
     }
@@ -35,25 +35,30 @@ class HFDecoration(private var isHeader: Boolean = true) : RecyclerView.ItemDeco
     }
 
     private fun setOutRect(outRect: Rect, view: View, recyclerView: RecyclerView) {
-        val position = recyclerView.getChildLayoutPosition(view)
-        Log.e("zwb", "position === $position")
-        val heightOffset = if (RVUtil.isVertical(recyclerView)) mHeight else 0
-        val widthOffset = if (!RVUtil.isVertical(recyclerView)) mWidth else 0
-
         val layoutManager = recyclerView.layoutManager
         layoutManager?.let {
+            // 是否需要分割线
+            var needSpace = false
             if (it is GridLayoutManager) {
-                // TODO
-                var spanCount = it.spanCount
-                Log.e("zwb","grid  spanCount = $spanCount")
-
+                val adapterPosition = recyclerView.getChildAdapterPosition(view)
+                // 示例：spanCount = 6  spanSize = 2  spanIndex 0,2,4  groupIndex:第几组
+                val spanCount = it.spanCount
+                val spanSizeLookup = it.spanSizeLookup
+                val groupIndex = spanSizeLookup.getSpanGroupIndex(adapterPosition, spanCount)
+                val lastGroupIndex = spanSizeLookup.getSpanGroupIndex(it.itemCount - 1, spanCount)
+                // 头部 且是第一组
+                if (isHeader && groupIndex == 0) {
+                    needSpace = true
+                } else if (!isHeader && groupIndex == lastGroupIndex) { // 尾部，且是最后一组
+                    needSpace = true
+                }
             } else {
+                val position = recyclerView.getChildLayoutPosition(view)
+                Log.e("zwb", "position === $position")
                 var spanCount = 1
                 if (it is StaggeredGridLayoutManager) {
                     spanCount = it.spanCount
                 }
-                // 是否需要分割线
-                val needSpace: Boolean
                 if (isHeader) {
                     needSpace = position < spanCount
                 } else {
@@ -61,20 +66,25 @@ class HFDecoration(private var isHeader: Boolean = true) : RecyclerView.ItemDeco
                     needSpace = position >= count - spanCount
                     // TODO StaggeredGridLayoutManager 需要检测
                 }
-                Log.e("zwb", "isHeader = $isHeader needSpace === $needSpace    position = $position  count = ${it.itemCount}  spanCount = $spanCount")
-                if (needSpace) {
-                    var top = isHeader
-                    if(RVUtil.isReverse(recyclerView)){
-                        top = !isHeader
-                    }
-                    if (top) {
-                        outRect.top = heightOffset
-                        outRect.left = widthOffset
-                    } else {
-                        outRect.bottom = heightOffset
-                        outRect.right = widthOffset
-                    }
-                }else{}
+                Log.e(
+                    "zwb",
+                    "isHeader = $isHeader needSpace === $needSpace    position = $position  count = ${it.itemCount}  spanCount = $spanCount"
+                )
+            }
+            if (needSpace) {
+                val heightOffset = if (RVUtil.isVertical(recyclerView)) mHeight else 0
+                val widthOffset = if (!RVUtil.isVertical(recyclerView)) mWidth else 0
+                var top = isHeader
+                if (RVUtil.isReverse(recyclerView)) {
+                    top = !isHeader
+                }
+                if (top) {
+                    outRect.top = heightOffset
+                    outRect.left = widthOffset
+                } else {
+                    outRect.bottom = heightOffset
+                    outRect.right = widthOffset
+                }
             }
         }
     }

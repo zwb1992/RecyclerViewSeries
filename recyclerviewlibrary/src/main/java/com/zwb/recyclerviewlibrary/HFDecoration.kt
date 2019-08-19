@@ -1,7 +1,6 @@
 package com.zwb.recyclerviewlibrary
 
 import android.graphics.Rect
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -54,7 +53,6 @@ class HFDecoration(private var isHeader: Boolean = true) : RecyclerView.ItemDeco
                 }
             } else {
                 val position = recyclerView.getChildLayoutPosition(view)
-                Log.e("zwb", "position === $position")
                 var spanCount = 1
                 if (it is StaggeredGridLayoutManager) {
                     spanCount = it.spanCount
@@ -64,12 +62,7 @@ class HFDecoration(private var isHeader: Boolean = true) : RecyclerView.ItemDeco
                 } else {
                     val count = it.itemCount
                     needSpace = position >= count - spanCount
-                    // TODO StaggeredGridLayoutManager 需要检测
                 }
-                Log.e(
-                    "zwb",
-                    "isHeader = $isHeader needSpace === $needSpace    position = $position  count = ${it.itemCount}  spanCount = $spanCount"
-                )
             }
             if (needSpace) {
                 val heightOffset = if (RVUtil.isVertical(recyclerView)) mHeight else 0

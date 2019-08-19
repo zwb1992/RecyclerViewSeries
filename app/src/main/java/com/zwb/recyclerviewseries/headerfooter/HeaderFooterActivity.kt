@@ -2,6 +2,7 @@ package com.zwb.recyclerviewseries.headerfooter
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -9,8 +10,11 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.zwb.recyclerviewseries.R
 import com.zwb.recyclerviewseries.headerfooter.adapter.GridAdapter
 import com.zwb.recyclerviewseries.headerfooter.adapter.LinearAdapter
+import com.zwb.recyclerviewseries.headerfooter.adapter.StaggeredAdapter
 import com.zwb.recyclerviewseries.headerfooter.bean.GridBean
+import com.zwb.recyclerviewseries.headerfooter.bean.StaggerdBean
 import kotlinx.android.synthetic.main.activity_header_footer.*
+import java.util.*
 
 /**
  * 为recyclerview添加头部 尾部
@@ -21,18 +25,26 @@ class HeaderFooterActivity : AppCompatActivity() {
 
     private var gridAdapter: GridAdapter? = null
     private var gridLayoutManager: GridLayoutManager? = null
+
+    private var staggerdAdapter: StaggeredAdapter? = null
+    private var staggerdManager: StaggeredGridLayoutManager? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_header_footer)
         initLinear()
         header.attach(recyclerView)
-        footer.attach(recyclerView,false)
+        footer.attach(recyclerView, false)
         btReverse.setOnClickListener { reverse() }
         btVertical.setOnClickListener { vertical() }
         btHorizontal.setOnClickListener { horizontal() }
         btGrid.setOnClickListener { grid() }
         btStaggered.setOnClickListener { staggered() }
-
+        header.setOnClickListener {
+            Toast.makeText(this, "头部", Toast.LENGTH_SHORT).show()
+        }
+        footer.setOnClickListener {
+            Toast.makeText(this, "尾部", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun initLinear() {
@@ -142,7 +154,24 @@ class HeaderFooterActivity : AppCompatActivity() {
     }
 
     private fun staggered() {
-
+        initStaggered()
     }
 
+    private fun initStaggered() {
+        staggerdAdapter = StaggeredAdapter(initStaggeredData())
+        staggerdManager = StaggeredGridLayoutManager(3, RecyclerView.VERTICAL)
+        recyclerView.layoutManager = staggerdManager
+        recyclerView.adapter = staggerdAdapter
+    }
+
+    private fun initStaggeredData(): MutableList<StaggerdBean> {
+        val list = mutableListOf<StaggerdBean>()
+        for (i in 0..30) {
+            val bean = StaggerdBean("测试内容---->$i", Random().nextInt(100) + 120, colors[Random().nextInt(7)])
+            list.add(bean)
+        }
+        return list
+    }
+
+    val colors = mutableListOf<String>("#ffffff", "#ff0f0f", "#0000cc", "#112233", "#aa2233", "#0011dd", "#dd3322")
 }

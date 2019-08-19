@@ -2,7 +2,6 @@ package com.zwb.recyclerviewlibrary
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -99,10 +98,6 @@ class RVHeaderFooter : FrameLayout {
         val hasData = RVUtil.hasData(recyclerView)
         val show =
             isHeader && RVUtil.isFirstRowVisible(recyclerView) || !isHeader && RVUtil.isLastRowVisible(recyclerView)
-        Log.e(
-            "zwb",
-            "isHeader == $isHeader   isFirstRowVisible = ${RVUtil.isFirstRowVisible(recyclerView)} isLastRowVisible = ${RVUtil.isLastRowVisible(recyclerView)}  show = $show   hasData = $hasData"
-        )
         visibility = if (hasData && show) View.VISIBLE else View.INVISIBLE
         if (hasData && show) {
             setTransitionXY()
@@ -114,7 +109,6 @@ class RVHeaderFooter : FrameLayout {
      */
     private fun setTransitionXY() {
         val xy = calculateTranslation()
-        Log.e("zwb", "xy==========$xy")
         // 先回到初始位置，避免方向切换时，布局找不到
         translationY = y.toFloat()
         translationX = x.toFloat()
@@ -130,16 +124,15 @@ class RVHeaderFooter : FrameLayout {
         val offset = RVUtil.getScrollOffset(recyclerView, RVUtil.isVertical(recyclerView))
         val scrollRange = RVUtil.getScrollRange(recyclerView, RVUtil.isVertical(recyclerView))
         val size = if (RVUtil.isVertical(recyclerView)) height else width
-        Log.e("zwb", "offset = $offset  scrollRange = $scrollRange  size = $size")
         // 如果没有反转
         var top = isHeader
-        if(RVUtil.isReverse(recyclerView)){
+        if (RVUtil.isReverse(recyclerView)) {
             top = !isHeader
         }
-        if (top) {
-            return -offset
+        return if (top) {
+            -offset
         } else {
-            return scrollRange - offset - size
+            scrollRange - offset - size
         }
     }
 }

@@ -1,11 +1,9 @@
 package com.zwb.recyclerviewlibrary
 
-import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import java.util.*
 
 /**
  * @ author : zhouweibin
@@ -53,15 +51,14 @@ object RVUtil {
         recyclerView?.layoutManager?.let {
             when (it) {
                 is LinearLayoutManager -> {
-                    Log.e("zwb", "findFirstVisibleItemPosition == ${it.findFirstVisibleItemPosition()}")
                     isFirstRowVisible = it.findFirstVisibleItemPosition() == 0
                 }
                 is GridLayoutManager -> isFirstRowVisible = it.findFirstVisibleItemPosition() == 0
                 is StaggeredGridLayoutManager -> {
-                    val pos = it.findFirstCompletelyVisibleItemPositions(null)
+                    val pos = it.findFirstVisibleItemPositions(null)
                     if (pos.isNotEmpty()) {
-                        val list = pos.asList()
-                        Collections.sort(list)
+                        val list = pos.toMutableList()
+                        list.sort()
                         isFirstRowVisible = list[0] == 0
                     }
                 }
@@ -80,10 +77,10 @@ object RVUtil {
                 is LinearLayoutManager -> isLastRowVisible = it.findLastVisibleItemPosition() == it.itemCount - 1
                 is GridLayoutManager -> isLastRowVisible = it.findLastVisibleItemPosition() == it.itemCount - 1
                 is StaggeredGridLayoutManager -> {
-                    val pos = it.findFirstCompletelyVisibleItemPositions(null)
+                    val pos = it.findLastVisibleItemPositions(null)
                     if (pos.isNotEmpty()) {
-                        val list = pos.asList()
-                        Collections.sort(list)
+                        val list = pos.toMutableList()
+                        list.sort()
                         isLastRowVisible = list[it.spanCount - 1] >= it.itemCount - 1
                     }
                 }

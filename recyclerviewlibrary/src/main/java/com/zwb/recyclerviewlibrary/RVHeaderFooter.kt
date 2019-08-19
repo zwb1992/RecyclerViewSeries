@@ -135,4 +135,19 @@ class RVHeaderFooter : FrameLayout {
             scrollRange - offset - size
         }
     }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        destroy()
+    }
+
+    private fun destroy() {
+        isAttached = false
+        recyclerView?.removeOnChildAttachStateChangeListener(onChildAttachStateChange)
+        recyclerView?.removeOnScrollListener(onScrollListener)
+        headerFooterDecoration?.let {
+            recyclerView?.removeItemDecoration(it)
+        }
+        recyclerView = null
+    }
 }

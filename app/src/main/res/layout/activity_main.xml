@@ -14,4 +14,11 @@
             android:layout_height="wrap_content"
             android:textAllCaps="false"
             android:text="RecyclerView头部尾部"/>
+
+    <Button
+            android:id="@+id/btHeaderFooter2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="RecyclerView头部尾部2"/>
 </LinearLayout>

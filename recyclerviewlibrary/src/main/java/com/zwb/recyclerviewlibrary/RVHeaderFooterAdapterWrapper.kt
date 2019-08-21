@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
  * @ author : zhouweibin
  * @ time: 2019/8/20 14:36.
  * @ desc: 通过添加viewType的方式添加多个header 多个footer
- * 需要注意：刷新数据时，position的问题  要考虑头尾数量
  **/
 class RVHeaderFooterAdapterWrapper(private var mInnerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -25,6 +24,53 @@ class RVHeaderFooterAdapterWrapper(private var mInnerAdapter: RecyclerView.Adapt
     val HEADER_TYPE = 1000
     @JvmField
     val FOOTER_TYPE = 2000
+
+    /**
+     * 内部适配器的观察者
+     */
+    private val mDataObserver = object : RecyclerView.AdapterDataObserver() {
+
+        override fun onChanged() {
+            super.onChanged()
+            notifyDataSetChanged()
+        }
+
+        override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+            super.onItemRangeChanged(positionStart, itemCount)
+            notifyItemRangeChanged(positionStart + getHeadersCount(), itemCount)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            super.onItemRangeInserted(positionStart, itemCount)
+            notifyItemRangeInserted(positionStart + getHeadersCount(), itemCount)
+        }
+
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            super.onItemRangeRemoved(positionStart, itemCount)
+            notifyItemRangeRemoved(positionStart + getHeadersCount(), itemCount)
+        }
+
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+            val headerViewsCountCount = getHeadersCount()
+            notifyItemRangeChanged(fromPosition + headerViewsCountCount, toPosition + headerViewsCountCount + itemCount)
+        }
+    }
+
+    /**
+     * 更新适配器
+     */
+    private fun updateAdapter() {
+        mInnerAdapter?.let {
+            notifyItemRangeRemoved(getHeadersCount(), mInnerAdapter!!.itemCount)
+            mInnerAdapter?.registerAdapterDataObserver(mDataObserver)
+            notifyItemRangeInserted(getHeadersCount(), mInnerAdapter!!.itemCount)
+        }
+    }
+
+    init {
+        updateAdapter()
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -90,7 +136,7 @@ class RVHeaderFooterAdapterWrapper(private var mInnerAdapter: RecyclerView.Adapt
      */
     fun setAdapter(innerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>?) {
         this.mInnerAdapter = innerAdapter
-        notifyDataSetChanged()
+        updateAdapter()
     }
 
     /**

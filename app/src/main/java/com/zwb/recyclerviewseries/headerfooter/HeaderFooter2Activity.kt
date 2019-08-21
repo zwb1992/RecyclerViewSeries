@@ -93,18 +93,14 @@ class HeaderFooter2Activity : AppCompatActivity() {
     private fun addData() {
         val s = "手动添加的数据"
         datas.add(2, s)
-        rvAdapterWrapper?.let {
-            rvAdapterWrapper!!.notifyItemInserted(rvAdapterWrapper!!.getHeadersCount() + 2)
-        }
+        lineaAdapter?.notifyItemInserted(2)
     }
 
     private fun deleteData() {
         datas.removeAt(2)
         datas.removeAt(2)
         datas.removeAt(2)
-        rvAdapterWrapper?.let {
-            rvAdapterWrapper!!.notifyItemRangeRemoved(rvAdapterWrapper!!.getHeadersCount() + 2, 3)
-        }
+        lineaAdapter?.notifyItemRangeRemoved(2, 3)
     }
 
     private fun grid() {

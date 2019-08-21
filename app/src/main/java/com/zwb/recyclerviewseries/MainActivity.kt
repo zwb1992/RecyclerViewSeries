@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.zwb.recyclerviewseries.headerfooter.HeaderFooter2Activity
 import com.zwb.recyclerviewseries.headerfooter.HeaderFooterActivity
+import com.zwb.recyclerviewseries.section.SectionActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -17,6 +18,9 @@ class MainActivity : AppCompatActivity() {
         }
         btHeaderFooter2.setOnClickListener {
             startActivity(Intent(this, HeaderFooter2Activity::class.java))
+        }
+        btSection.setOnClickListener {
+            startActivity(Intent(this, SectionActivity::class.java))
         }
     }
 }

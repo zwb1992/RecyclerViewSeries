@@ -34,4 +34,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(path: ':recyclerviewlibrary')
     implementation 'androidx.recyclerview:recyclerview:1.0.0-alpha1'
+    api 'com.alibaba:fastjson:1.2.55'
 }

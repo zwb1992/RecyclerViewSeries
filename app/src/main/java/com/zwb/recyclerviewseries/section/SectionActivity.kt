@@ -21,6 +21,7 @@ class SectionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_section)
         header.attach(recyclerView)
+        stickyHeader.attach(recyclerView)
         btQuery.setOnClickListener {
             query(edit_query.text.toString())
         }
@@ -50,8 +51,8 @@ class SectionActivity : AppCompatActivity() {
             city.areaCode.add(areaCode)
         }
         adapter = CitySectionAdapter(cities)
-//        recyclerView.layoutManager = LinearLayoutManagerFx(this)
-        recyclerView.layoutManager = GridLayoutManagerFx(this, 2)
+        recyclerView.layoutManager = LinearLayoutManagerFx(this)
+//        recyclerView.layoutManager = GridLayoutManagerFx(this, 2)
 //        val rvHeaderFooterAdapterWrapper = RVHeaderFooterAdapterWrapper(adapter)
 //        rvHeaderFooterAdapterWrapper.addHeader(layoutInflater.inflate(R.layout.section_query,recyclerView,false))
 //        recyclerView.adapter = rvHeaderFooterAdapterWrapper

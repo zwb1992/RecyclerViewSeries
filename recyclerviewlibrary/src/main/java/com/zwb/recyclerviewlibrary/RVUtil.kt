@@ -43,6 +43,26 @@ object RVUtil {
         return isVertical
     }
 
+    fun getFirstVisibleItemPosition(recyclerView: RecyclerView?):Int{
+        var firstPos = -1
+        recyclerView?.layoutManager?.let {layoutManager ->
+            if(layoutManager is LinearLayoutManager){
+                // 第一个可见的view的position
+                firstPos = layoutManager.findFirstVisibleItemPosition()
+            }else if(layoutManager is GridLayoutManager){
+                firstPos = layoutManager.findFirstVisibleItemPosition()
+            }else if(layoutManager is StaggeredGridLayoutManager){
+                val pos = layoutManager.findFirstVisibleItemPositions(null)
+                if (pos.isNotEmpty()) {
+                    val list = pos.toMutableList()
+                    list.sort()
+                    firstPos = list[0]
+                }
+            }
+        }
+        return firstPos
+    }
+
     /**
      * 第一个item是否可见
      */

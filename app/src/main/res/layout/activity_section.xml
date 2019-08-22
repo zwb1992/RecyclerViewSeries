@@ -14,9 +14,16 @@
 
     <com.zwb.recyclerviewlibrary.RVHeaderFooter
             android:id="@+id/header"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
         <include layout="@layout/section_query"/>
     </com.zwb.recyclerviewlibrary.RVHeaderFooter>
+
+    <com.zwb.recyclerviewseries.section.CityStickyHeader
+            android:id="@+id/stickyHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+    </com.zwb.recyclerviewseries.section.CityStickyHeader>
 </FrameLayout>

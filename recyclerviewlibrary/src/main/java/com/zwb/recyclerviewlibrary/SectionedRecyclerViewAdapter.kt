@@ -198,7 +198,7 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
      */
     private val headerPos = mutableListOf<Int>()
 
-    protected fun isHeader(position: Int): Boolean {
+    fun isHeader(position: Int): Boolean {
         if (headerPos.isNotEmpty()) {
             return headerPos.contains(position)
         }
@@ -365,4 +365,12 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
      * 注：仅在layoutManager为GridLayoutManager的时候使用
      */
     protected fun getGridSpanSize(groupIndex: Int, sectionIndex: Int, position: Int) = 1
+
+    /**
+     * 获取该组标记
+     * 用来实现stickyHeader效果
+     */
+    open fun getGroupHeaderTag(groupIndex: Int): Any = ""
+
+    fun getGroupHeaderTagByPos(position: Int): Any = getGroupHeaderTag(getGroupIndex(position))
 }

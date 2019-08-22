@@ -48,11 +48,12 @@ class CitySectionAdapter(var cities: MutableList<City>) : SectionedRecyclerViewA
             object : ExpandListener {
                 override fun onExpandabled(expand: Boolean, groupIndex: Int) {
                     val groupPos = getGroupPosition(groupIndex)
-//                    notifyItemRangeChanged(
-//                        groupPos + 1,
-//                        cities[groupIndex].areaCode.size + if (isShowSectionFooter(groupIndex)) 1 else 0
-//                    )
-                    notifyDataSetChanged()
+                    notifyItemRangeChanged(
+                        groupPos + 1,
+                        cities[groupIndex].areaCode.size + if (isShowSectionFooter(groupIndex)) 1 else 0
+                    )
+
+//                    notifyDataSetChanged()
                 }
             })
     }
@@ -128,5 +129,9 @@ class CitySectionAdapter(var cities: MutableList<City>) : SectionedRecyclerViewA
 
     override fun expandabled(groupIndex: Int): Boolean {
         return cities[groupIndex].expandabled
+    }
+
+    override fun getGroupHeaderTag(groupIndex: Int): Any {
+        return cities[groupIndex].groupName
     }
 }

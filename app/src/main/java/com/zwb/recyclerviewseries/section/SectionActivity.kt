@@ -3,7 +3,9 @@ package com.zwb.recyclerviewseries.section
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.zwb.recyclerviewlibrary.GridLayoutManagerFx
 import com.zwb.recyclerviewlibrary.LinearLayoutManagerFx
 import com.zwb.recyclerviewlibrary.RVHeaderFooterAdapterWrapper
 import com.zwb.recyclerviewseries.R
@@ -48,7 +50,8 @@ class SectionActivity : AppCompatActivity() {
             city.areaCode.add(areaCode)
         }
         adapter = CitySectionAdapter(cities)
-        recyclerView.layoutManager = LinearLayoutManagerFx(this)
+//        recyclerView.layoutManager = LinearLayoutManagerFx(this)
+        recyclerView.layoutManager = GridLayoutManagerFx(this, 2)
 //        val rvHeaderFooterAdapterWrapper = RVHeaderFooterAdapterWrapper(adapter)
 //        rvHeaderFooterAdapterWrapper.addHeader(layoutInflater.inflate(R.layout.section_query,recyclerView,false))
 //        recyclerView.adapter = rvHeaderFooterAdapterWrapper

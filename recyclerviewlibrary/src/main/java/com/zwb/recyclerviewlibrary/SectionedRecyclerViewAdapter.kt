@@ -1,14 +1,62 @@
 package com.zwb.recyclerviewlibrary
 
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
 /**
  * @ author : zhouweibin
  * @ time: 2019/8/21 15:01.
  * @ desc: 可以为部分item添加header footer （城市列表）
+ * 数据变化后，一定得cleaCache 否则数据会错乱
  **/
 abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    /**
+     * 内部适配器的观察者
+     */
+    private val mDataObserver = object : RecyclerView.AdapterDataObserver() {
+
+        override fun onChanged() {
+            clearCache()
+            super.onChanged()
+        }
+
+        override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+            clearCache()
+            super.onItemRangeChanged(positionStart, itemCount)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            clearCache()
+            super.onItemRangeInserted(positionStart, itemCount)
+        }
+
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            clearCache()
+            super.onItemRangeRemoved(positionStart, itemCount)
+        }
+
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            clearCache()
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount)
+        }
+    }
+
+    init {
+        registerAdapterDataObserver(mDataObserver)
+    }
+
+    /**
+     * 清除缓存数据
+     */
+    protected fun clearCache() {
+        headerPos.clear()
+        footerPos.clear()
+        groupPos.clear()
+        groupCount.clear()
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (isSectionHeaderViewType(viewType)) {
@@ -148,8 +196,13 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
      * 是否是header
      * @param position 整个列表的索引
      */
+    private val headerPos = mutableListOf<Int>()
+
     protected fun isHeader(position: Int): Boolean {
-        val headerPos = mutableListOf<Int>()
+        if (headerPos.isNotEmpty()) {
+            return headerPos.contains(position)
+        }
+        headerPos.clear()
         val groupCount = getGroupCount()
         var totalCount = 0
         for (i in 0 until groupCount) {
@@ -172,8 +225,13 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
      * footer
      * @param position 整个列表的索引
      */
+    private val footerPos = mutableListOf<Int>()
+
     protected fun isFooter(position: Int): Boolean {
-        val headerPos = mutableListOf<Int>()
+        if (footerPos.isNotEmpty()) {
+            return footerPos.contains(position)
+        }
+        footerPos.clear()
         val groupCount = getGroupCount()
         var totalCount = 0
         for (i in 0 until groupCount) {
@@ -185,20 +243,25 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
             }
 
             if (isShowSectionFooter(i) && expandabled(i)) {
-                headerPos.add(totalCount)
+                footerPos.add(totalCount)
                 totalCount++
             }
         }
-        return headerPos.contains(position)
+        return footerPos.contains(position)
     }
 
     /**
      * 获取分组索引
      * @param position 整个列表的索引
      */
+    private val groupPos = mutableListOf<Int>()
+
     protected fun getGroupIndex(position: Int): Int {
         // 存放分组信息,例如;0-00-0 1-111-1 2-22  333-3  代表：头部+内容+尾部
-        val groupPos = mutableListOf<Int>()
+        if (groupPos.isNotEmpty() && groupPos.size > position) {
+            return groupPos[position]
+        }
+        groupPos.clear()
         val groupCount = getGroupCount()
         for (i in 0 until groupCount) {
             if (isShowSectionHeader(i)) {
@@ -231,6 +294,7 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
         return sectionIndex
     }
 
+    private val groupCount = mutableMapOf<Int, Int>()
     /**
      * 获取第几组的开始位置
      * @param position 整个列表的索引 从0开始 传入1 代表获取第0组的数量
@@ -238,6 +302,10 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
     fun getGroupPosition(groupIndex: Int): Int {
         if (groupIndex < 1) {
             return 0
+        }
+        val tempCount = groupCount[groupIndex - 1]
+        if (tempCount != null) {
+            return tempCount
         }
         var totalCount = 0
         for (i in 0 until groupIndex) {
@@ -252,6 +320,7 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
                 totalCount++
             }
         }
+        groupCount[groupIndex - 1] = totalCount
         return totalCount
     }
 
@@ -261,4 +330,39 @@ abstract class SectionedRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.
      * @param position 整个列表的索引
      */
     protected open fun expandabled(groupIndex: Int) = true
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        //为了兼容GridLayout
+        val layoutManager = recyclerView.layoutManager
+        if (layoutManager is GridLayoutManager) {
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    if (isHeader(position)) {
+                        return layoutManager.spanCount
+                    } else if (isFooter(position)) {
+                        return layoutManager.spanCount
+                    }
+                    return getGridSpanSize(getGroupIndex(position), getSectionIndex(position), position)
+                }
+            }
+        }
+        super.onAttachedToRecyclerView(recyclerView)
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        val lp = holder.itemView.layoutParams
+        if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
+            val position = holder.layoutPosition
+            if (isHeader(position) || isFooter(position)) {
+                lp.isFullSpan = true
+            }
+        }
+        super.onViewAttachedToWindow(holder)
+    }
+
+    /**
+     * 获取GridLayoutManager 的SpanSize
+     * 注：仅在layoutManager为GridLayoutManager的时候使用
+     */
+    protected fun getGridSpanSize(groupIndex: Int, sectionIndex: Int, position: Int) = 1
 }

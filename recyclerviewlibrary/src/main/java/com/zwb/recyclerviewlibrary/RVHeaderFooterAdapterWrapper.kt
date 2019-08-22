@@ -204,10 +204,10 @@ class RVHeaderFooterAdapterWrapper(private var mInnerAdapter: RecyclerView.Adapt
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         mInnerAdapter?.onViewAttachedToWindow(holder)
-        val position = holder.layoutPosition
-        if (isHeaderViewPos(position) || isFooterViewPos(position)) {
-            val lp = holder.itemView.layoutParams
-            if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
+        val lp = holder.itemView.layoutParams
+        if (lp != null && lp is StaggeredGridLayoutManager.LayoutParams) {
+            val position = holder.layoutPosition
+            if (isHeaderViewPos(position) || isFooterViewPos(position)) {
                 lp.isFullSpan = true
             }
         }

@@ -48,10 +48,16 @@ class HeaderFooterActivity : AppCompatActivity() {
     }
 
     private fun initLinear() {
-        lineaAdapter = LinearAdapter(initData())
+        lineaAdapter = LinearAdapter()
         recyclerView.adapter = lineaAdapter
         layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
+        lineaAdapter?.setDatas(initData())
+        lineaAdapter?.setListener {
+            onOnItemClickListener { view, any, i ->
+                Toast.makeText(this@HeaderFooterActivity,any,Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun initData(): MutableList<String> {

@@ -57,13 +57,14 @@ class HeaderFooter2Activity : AppCompatActivity() {
     }
 
     private fun initLinear() {
-        lineaAdapter = LinearAdapter(initData())
+        lineaAdapter = LinearAdapter()
         rvAdapterWrapper = RVHeaderFooterAdapterWrapper(lineaAdapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
         layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
         addHeader()
         addFooter()
         recyclerView.adapter = rvAdapterWrapper
+        lineaAdapter?.setDatas(initData())
     }
 
     val datas = mutableListOf<String>()

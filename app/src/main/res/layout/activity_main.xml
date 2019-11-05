@@ -28,4 +28,10 @@
             android:layout_height="wrap_content"
             android:textAllCaps="false"
             android:text="每一组数据添加头部尾部"/>
+    <Button
+            android:id="@+id/btSimpleLayoutManager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="SimpleLayoutManager"/>
 </LinearLayout>
